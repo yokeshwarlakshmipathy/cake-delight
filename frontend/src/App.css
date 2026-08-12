@@ -4030,3 +4030,43 @@ body {
     width: 100%;
   }
 }
+/* ==========================================
+   CAKE DELIGHT LOGO - HERO
+========================================== */
+
+.hero-logo {
+  width: 230px;
+  height: 160px;
+  object-fit: contain;
+  display: block;
+}
+
+
+/* ==========================================
+   CAKE DELIGHT LOGO - HERO NOTE
+========================================== */
+
+.hero-note {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.hero-note-logo {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  display: block;
+}
+
+
+/* ==========================================
+   CAKE DELIGHT LOGO - CAKE PLACEHOLDER
+========================================== */
+
+.cake-placeholder-logo {
+  width: 180px;
+  height: 180px;
+  object-fit: contain;
+  display: block;
+}

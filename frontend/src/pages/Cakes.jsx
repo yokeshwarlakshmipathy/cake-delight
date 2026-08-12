@@ -8,8 +8,59 @@ import {
 
 import { useCart } from "../context/CartContext";
 
+// ==========================================
+// LOCAL CAKE IMAGES
+// ==========================================
 
+import blackForestImage from "../assets/cakes/Black Forest.png";
+import butterscotchImage from "../assets/cakes/Buttersctoch.png";
+import chocolateTruffleImage from "../assets/cakes/chocotruffle.png";
+import redVelvetImage from "../assets/cakes/Red Velvet.png";
+import strawberryImage from "../assets/cakes/Strawberry.png";
+import vanillaImage from "../assets/cakes/Vanilla.png";
+import logoImage from "../assets/logo.png";
+import heroImage from "../assets/hero.png";
 function Cakes() {
+
+  // ==========================================
+  // CAKE IMAGE MAPPING
+  // ==========================================
+
+  const getCakeImage = (cakeName) => {
+    const name = String(cakeName || "").toLowerCase();
+
+    if (name.includes("black forest")) {
+      return blackForestImage;
+    }
+
+    if (name.includes("butterscotch")) {
+      return butterscotchImage;
+    }
+
+    if (
+      name.includes("chocolate") ||
+      name.includes("truffle") ||
+      name.includes("chocotrufle")
+    ) {
+      return chocolateTruffleImage;
+    }
+
+    if (name.includes("red velvet")) {
+      return redVelvetImage;
+    }
+
+    if (name.includes("strawberry")) {
+      return strawberryImage;
+    }
+
+    if (name.includes("vanilla")) {
+      return vanillaImage;
+    }
+
+    return null;
+  };
+
+
   const [cakes, setCakes] = useState([]);
   const [ratings, setRatings] = useState({});
 
@@ -18,6 +69,7 @@ function Cakes() {
     useState(true);
 
   const [error, setError] = useState("");
+
 
   // ==========================================
   // FILTER STATE
@@ -42,6 +94,7 @@ function Cakes() {
       minPrice: "",
       maxPrice: "",
     });
+
 
   // ==========================================
   // CART
@@ -339,8 +392,11 @@ function Cakes() {
         >
 
           <span className="brand-icon">
-            🍰
-          </span>
+  <img
+    src={logoImage}
+    alt="Cake Delight"
+  />
+</span>
 
           <div>
             <strong>
@@ -357,26 +413,26 @@ function Cakes() {
 
         <nav>
 
-  <Link
-    to="/"
-    className="active"
-  >
-    Home
-  </Link>
+          <Link
+            to="/"
+            className="active"
+          >
+            Home
+          </Link>
 
-  <a href="#collection">
-    Cakes
-  </a>
+          <a href="#collection">
+            Cakes
+          </a>
 
-  <Link to="/orders">
-    My Orders
-  </Link>
+          <Link to="/orders">
+            My Orders
+          </Link>
 
-  <a href="#about">
-    About
-  </a>
+          <a href="#about">
+            About
+          </a>
 
-</nav>
+        </nav>
 
 
         <Link
@@ -436,9 +492,13 @@ function Cakes() {
             </a>
 
             <span className="hero-note">
-              🍰 Freshly baked every day
-            </span>
-
+  <img
+    src={logoImage}
+    alt=""
+    className="hero-note-logo"
+  />
+  Freshly baked every day
+</span>
           </div>
 
         </div>
@@ -449,8 +509,12 @@ function Cakes() {
           <div className="hero-circle"></div>
 
           <div className="hero-cake">
-            🍰
-          </div>
+  <img
+    src={logoImage}
+    alt="Cake Delight"
+    className="hero-logo"
+  />
+</div>
 
           <div className="floating-card floating-card-one">
 
@@ -553,8 +617,6 @@ function Cakes() {
           }
         >
 
-          {/* NAME SEARCH */}
-
           <div className="filter-field search-field">
 
             <label htmlFor="cake-search">
@@ -575,8 +637,6 @@ function Cakes() {
 
           </div>
 
-
-          {/* CATEGORY */}
 
           <div className="filter-field">
 
@@ -610,8 +670,6 @@ function Cakes() {
           </div>
 
 
-          {/* MIN PRICE */}
-
           <div className="filter-field">
 
             <label htmlFor="min-price">
@@ -635,8 +693,6 @@ function Cakes() {
           </div>
 
 
-          {/* MAX PRICE */}
-
           <div className="filter-field">
 
             <label htmlFor="max-price">
@@ -659,8 +715,6 @@ function Cakes() {
 
           </div>
 
-
-          {/* ACTIONS */}
 
           <div className="filter-actions">
 
@@ -686,7 +740,9 @@ function Cakes() {
         </form>
 
 
-        {/* ACTIVE FILTERS */}
+        {/* ====================================
+            ACTIVE FILTERS
+        ===================================== */}
 
         {(appliedFilters.name ||
           appliedFilters.category !==
@@ -746,6 +802,9 @@ function Cakes() {
                 cake.id
               );
 
+            const cakeImage =
+              getCakeImage(cake.name);
+
             return (
               <article
                 className="cake-card"
@@ -757,26 +816,29 @@ function Cakes() {
                   className="cake-image"
                 >
 
-                  <div className="cake-placeholder">
-                    <span>
-                      🍰
-                    </span>
-                  </div>
+                  {/* LOCAL CAKE IMAGE */}
 
-                  {cake.imageUrl && (
+                  {cakeImage ? (
                     <img
-                      src={cake.imageUrl}
+                      src={cakeImage}
                       alt={cake.name}
-                      onError={(event) => {
-                        event.currentTarget.style.display =
-                          "none";
-                      }}
+                      className="cake-product-image"
                     />
+                  ) : (
+                    <div className="cake-placeholder">
+  <img
+    src={logoImage}
+    alt="Cake Delight"
+    className="cake-placeholder-logo"
+  />
+</div>
                   )}
+
 
                   <span className="category-badge">
                     {cake.category}
                   </span>
+
 
                   {cake.available && (
                     <span className="fresh-badge">
@@ -788,6 +850,8 @@ function Cakes() {
 
 
                 <div className="cake-content">
+
+                  {/* RATING */}
 
                   <div className="rating">
 
@@ -827,6 +891,8 @@ function Cakes() {
                   </div>
 
 
+                  {/* TITLE */}
+
                   <Link
                     to={`/cakes/${cake.id}`}
                     className="cake-title-link"
@@ -839,10 +905,14 @@ function Cakes() {
                   </Link>
 
 
+                  {/* DESCRIPTION */}
+
                   <p>
                     {cake.description}
                   </p>
 
+
+                  {/* PRICE + AVAILABILITY */}
 
                   <div className="cake-footer">
 
@@ -876,6 +946,8 @@ function Cakes() {
 
                   </div>
 
+
+                  {/* ADD TO CART */}
 
                   <button
                     type="button"
@@ -928,7 +1000,9 @@ function Cakes() {
         </div>
 
 
-        {/* EMPTY RESULTS */}
+        {/* ====================================
+            EMPTY RESULTS
+        ===================================== */}
 
         {cakes.length === 0 && (
           <div className="empty-state">
@@ -1041,7 +1115,9 @@ function Cakes() {
       </section>
 
 
-      {/* FOOTER */}
+      {/* ======================================
+          FOOTER
+      ======================================= */}
 
       <footer className="footer">
 
