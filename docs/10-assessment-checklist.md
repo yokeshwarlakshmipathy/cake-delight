@@ -1,8 +1,8 @@
-\# Cake Delight - Capstone Assessment Checklist
+# Cake Delight - Capstone Assessment Checklist
 
 
 
-\## 1. Purpose
+## 1. Purpose
 
 
 
@@ -14,7 +14,7 @@ This document maps the Cake Delight implementation to the functional scope, arch
 
 
 
-\# 2. Functional Requirements
+# 2. Functional Requirements
 
 
 
@@ -60,7 +60,7 @@ This document maps the Cake Delight implementation to the functional scope, arch
 
 | Order confirmation notification | Notification Service | ✅ |
 
-| Event-driven notification | RabbitMQ + `ORDER\_COMPLETED` | ✅ |
+| Event-driven notification | RabbitMQ + `ORDER_COMPLETED` | ✅ |
 
 
 
@@ -68,15 +68,15 @@ This document maps the Cake Delight implementation to the functional scope, arch
 
 
 
-\# 3. Microservices Design Requirements
+# 3. Microservices Design Requirements
 
 
 
-\## Cake Catalog Microservice
+## Cake Catalog Microservice
 
 
 
-\### Required
+### Required
 
 
 
@@ -106,7 +106,7 @@ This document maps the Cake Delight implementation to the functional scope, arch
 
 
 
-\### Implementation
+### Implementation
 
 
 
@@ -116,7 +116,7 @@ Catalog Service
 
 Port: 8081
 
-Database: catalog\_db
+Database: catalog_db
 
 API Prefix: /api/cakes
 
@@ -166,7 +166,7 @@ Order Service
 
 Port: 8082
 
-Database: order\_db
+Database: order_db
 
 Basket API: /api/baskets
 
@@ -212,7 +212,7 @@ Rating Service
 
 Port: 8083
 
-Database: rating\_db
+Database: rating_db
 
 API Prefix: /api/ratings
 
@@ -252,7 +252,7 @@ Notification Service
 
 Port: 8084
 
-Database: notification\_db
+Database: notification_db
 
 API Prefix: /api/notifications
 
@@ -264,7 +264,7 @@ The Notification Service consumes the order completion event and persists:
 
 
 
-type   = ORDER\_CONFIRMATION
+type   = ORDER_CONFIRMATION
 
 status = SENT
 
@@ -276,7 +276,7 @@ Status:
 
 ✅ Complete
 
-4\. Architecture Requirements
+4. Architecture Requirements
 
 API Gateway
 
@@ -304,15 +304,15 @@ Routes:
 
 
 
-/api/cakes/\*\*           → catalog-service:8081
+/api/cakes/**           → catalog-service:8081
 
-/api/baskets/\*\*         → order-service:8082
+/api/baskets/**         → order-service:8082
 
-/api/orders/\*\*          → order-service:8082
+/api/orders/**          → order-service:8082
 
-/api/ratings/\*\*         → rating-service:8083
+/api/ratings/**         → rating-service:8083
 
-/api/notifications/\*\*  → notification-service:8084
+/api/notifications/**  → notification-service:8084
 
 
 
@@ -356,13 +356,13 @@ The databases are separated by service:
 
 
 
-Catalog Service       → catalog\_db
+Catalog Service       → catalog_db
 
-Order Service         → order\_db
+Order Service         → order_db
 
-Rating Service        → rating\_db
+Rating Service        → rating_db
 
-Notification Service  → notification\_db
+Notification Service  → notification_db
 
 
 
@@ -438,7 +438,7 @@ Order Service
 
 &#x20;     ↓
 
-ORDER\_COMPLETED
+ORDER_COMPLETED
 
 &#x20;     ↓
 
@@ -460,7 +460,7 @@ Status:
 
 ✅ Complete
 
-5\. Containerization Requirements
+5. Containerization Requirements
 
 Docker
 
@@ -504,7 +504,7 @@ Status:
 
 ✅ Complete
 
-6\. Kubernetes Requirements
+6. Kubernetes Requirements
 
 Kubernetes Deployment
 
@@ -612,9 +612,9 @@ Keys:
 
 
 
-POSTGRES\_USERNAME
+POSTGRES_USERNAME
 
-POSTGRES\_PASSWORD
+POSTGRES_PASSWORD
 
 
 
@@ -628,7 +628,7 @@ Status:
 
 ✅ Complete
 
-7\. Scalability and Maintainability
+7. Scalability and Maintainability
 
 
 
@@ -664,7 +664,7 @@ Status:
 
 ✅ Demonstrated through independent service deployments
 
-8\. Resilience and Operational Practices
+8. Resilience and Operational Practices
 
 
 
@@ -700,7 +700,7 @@ Advanced resilience mechanisms such as circuit breakers and distributed retry po
 
 
 
-9\. Test Validation
+9. Test Validation
 
 
 
@@ -728,7 +728,7 @@ Application PostgreSQL databases are not required for these context tests.
 
 
 
-10\. Security / Configuration Validation
+10. Security / Configuration Validation
 
 
 
@@ -736,9 +736,9 @@ The service source configuration was checked for the previously hardcoded values
 
 
 
-password: 123
+password: SPRING_DATASOURCE_USERNAME
 
-username: postgres
+username: SPRING_DATASOURCE_PASSWORD
 
 
 
@@ -756,7 +756,7 @@ Status:
 
 ✅ Verified
 
-11\. API Documentation
+11. API Documentation
 
 
 
@@ -794,7 +794,7 @@ Status:
 
 ✅ Complete
 
-12\. Database Documentation
+12. Database Documentation
 
 
 
@@ -832,7 +832,7 @@ Status:
 
 ✅ Complete
 
-13\. Event Contract Documentation
+13. Event Contract Documentation
 
 
 
@@ -848,7 +848,7 @@ It covers:
 
 
 
-ORDER\_COMPLETED
+ORDER_COMPLETED
 
 Event producer
 
@@ -868,7 +868,7 @@ Status:
 
 ✅ Complete
 
-14\. Docker Documentation
+14. Docker Documentation
 
 
 
@@ -886,7 +886,7 @@ Status:
 
 ✅ Complete
 
-15\. Kubernetes Documentation
+15. Kubernetes Documentation
 
 
 
@@ -928,7 +928,7 @@ Status:
 
 ✅ Complete
 
-16\. Setup Documentation
+16. Setup Documentation
 
 
 
@@ -946,7 +946,7 @@ Status:
 
 ✅ Complete
 
-17\. Demonstration Documentation
+17. Demonstration Documentation
 
 
 
@@ -1012,7 +1012,7 @@ Status:
 
 ✅ Complete
 
-18\. Assessment Deliverables
+18. Assessment Deliverables
 
 
 
@@ -1068,7 +1068,7 @@ End-to-End Demonstration
 
 ✅ docs/09-end-to-end-demo.md
 
-19\. Final Functional Verification
+19. Final Functional Verification
 
 
 
@@ -1108,7 +1108,7 @@ The major functional journey has been verified:
 
 ✅ RabbitMQ event communication
 
-20\. Final Technical Verification
+20. Final Technical Verification
 
 
 
@@ -1144,7 +1144,7 @@ The following technical components have been verified:
 
 ✅ Service discovery
 
-21\. Final Capstone Mapping
+21. Final Capstone Mapping
 
 Capstone Area	Cake Delight Implementation	Status
 
@@ -1174,7 +1174,7 @@ Notifications	Notification Service	✅
 
 Documentation	docs/	✅
 
-22\. Final Project Status
+22. Final Project Status
 
 
 
