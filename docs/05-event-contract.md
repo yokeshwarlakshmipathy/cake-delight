@@ -1,616 +1,222 @@
-\# Cake Delight - Event Contract
+# Cake Delight - Event Contract
 
-
-
-\## 1. Overview
-
-
+## 1. Overview
 
 Cake Delight uses RabbitMQ for asynchronous communication between the Order Service and Notification Service.
 
-
-
 The purpose of the event-driven workflow is to decouple order completion from notification processing.
 
-
+This implementation creates a persisted in-app notification record after checkout. It does not implement external email or SMS delivery; the Notification Service only stores the notification and marks its status as `SENT`.
 
 The Order Service acts as the event producer.
 
-
-
 The Notification Service acts as the event consumer.
 
-
-
-\---
-
-
-
-\## 2. Event Flow
-
-
+## 2. Event Flow
 
 The implemented event flow is:
 
-
-
 ```text
-
 Customer Checkout
-
-&#x20;      ↓
-
+      ↓
 Order Service
-
-&#x20;      ↓
-
+      ↓
 Order Created
-
-&#x20;      ↓
-
+      ↓
 Order Status = COMPLETED
-
-&#x20;      ↓
-
-ORDER\_COMPLETED Event
-
-&#x20;      ↓
-
+      ↓
+ORDER_COMPLETED Event
+      ↓
 RabbitMQ
-
-&#x20;      ↓
-
+      ↓
 order.completed.queue
-
-&#x20;      ↓
-
+      ↓
 Notification Service
-
-&#x20;      ↓
-
+      ↓
 OrderCompletedListener
-
-&#x20;      ↓
-
+      ↓
 Create Order Confirmation
+      ↓
+notification_db
+```
 
-&#x20;      ↓
-
-notification\_db
-
-
-
-
-
-
-
-3\. Event Name
-
-
+## 3. Event Name
 
 The event represents successful order completion.
 
-
-
 Logical event name:
 
-
-
-ORDER\_COMPLETED
-
-
+```text
+ORDER_COMPLETED
+```
 
 The event is published after the Order Service successfully completes checkout.
 
-
-
-4\. Event Payload
-
-
+## 4. Event Payload
 
 The Order Service publishes the information required by the Notification Service to create an order confirmation.
 
-
-
 The implemented event contains:
 
+| Field | Type | Description |
+| --- | --- | --- |
+| `orderId` | Long | Identifier of the completed order |
+| `userId` | Long | Identifier of the customer |
 
+The corresponding consumer-side model is:
 
-Field	Type	Description
-
-orderId	Long	Identifier of the completed order
-
-userId	Long	Identifier of the customer
-
-
-
-The corresponding consumer-side event model is:
-
-
-
+```java
 public record OrderCompletedEvent(
-
-&#x20;   Long orderId,
-
-&#x20;   Long userId
-
+    Long orderId,
+    Long userId
 ) {
-
 }
+```
 
-5\. Producer
-
-
+## 5. Producer
 
 The event producer is implemented in the Order Service.
 
-
-
 The checkout process performs the following steps:
 
+1. Retrieve the user's basket.
+2. Validate that the basket is not empty.
+3. Create the order and order items.
+4. Save the order.
+5. Set the order status to `COMPLETED`.
+6. Publish the `ORDER_COMPLETED` event.
+7. Clear the basket.
 
+## 6. Message Broker
 
-1\. Retrieve user's basket
+The application uses RabbitMQ.
 
-2\. Validate that the basket is not empty
+RabbitMQ is deployed as a Kubernetes workload and exposed internally through the service:
 
-3\. Create Order
-
-4\. Create Order Items
-
-5\. Save Order
-
-6\. Set order status to COMPLETED
-
-7\. Save updated Order
-
-8\. Publish ORDER\_COMPLETED event
-
-9\. Clear the basket
-
-
-
-The event is associated with the completed order and user.
-
-
-
-6\. Message Broker
-
-
-
-The application uses:
-
-
-
-RabbitMQ
-
-
-
-RabbitMQ is deployed as a Kubernetes workload and exposed internally through the Kubernetes service:
-
-
-
+```text
 rabbitmq:5672
+```
 
+The management UI is exposed on:
 
-
-RabbitMQ management is available on:
-
-
-
+```text
 rabbitmq:15672
+```
 
-
-
-where the configured environment permits management access.
-
-
-
-7\. Queue
-
-
+## 7. Queue
 
 The Notification Service declares and listens to:
 
-
-
+```text
 order.completed.queue
+```
 
+This queue is defined in the Notification Service RabbitMQ configuration and is consumed by the listener.
 
+## 8. Consumer
 
-The queue is defined in the Notification Service RabbitMQ configuration.
+The Notification Service contains an `OrderCompletedListener`.
 
+It uses Spring AMQP and listens on the configured queue:
 
+```java
+@RabbitListener(queues = RabbitMQConfig.ORDER_COMPLETED_QUEUE)
+```
 
-The listener is associated with this queue.
+The listener receives the `OrderCompletedEvent` and invokes notification creation using the event's `orderId` and `userId` values.
 
+## 9. Consumer Processing
 
+When an `ORDER_COMPLETED` event is consumed, the Notification Service:
 
-8\. Consumer
+- receives the order ID and user ID
+- creates an order-confirmation notification record
+- sets the notification type to `ORDER_CONFIRMATION`
+- creates the notification message
+- sets the notification status to `SENT`
+- persists the notification in `notification_db`
 
+This is a database-backed in-app notification flow. No real email or SMS sender is implemented in this project.
 
-
-The Notification Service contains an OrderCompletedListener.
-
-
-
-The listener uses Spring AMQP:
-
-
-
-@RabbitListener(
-
-&#x20;   queues = RabbitMQConfig.ORDER\_COMPLETED\_QUEUE
-
-)
-
-
-
-The listener receives:
-
-
-
-OrderCompletedEvent
-
-
-
-and invokes the notification business service using the event's:
-
-
-
-orderId
-
-userId
-
-9\. Consumer Processing
-
-
-
-When an ORDER\_COMPLETED event is consumed, the Notification Service:
-
-
-
-Receives the order ID and user ID.
-
-Creates an order-confirmation notification.
-
-Sets the notification type to:
-
-ORDER\_CONFIRMATION
-
-Creates the notification message.
-
-Sets the notification status to:
-
-SENT
-
-Persists the notification in notification\_db.
-
-10\. Notification Message
-
-
+## 10. Notification Message
 
 The generated notification message follows the implemented format:
 
-
-
+```text
 Your Cake Delight order #<orderId> has been confirmed successfully.
-
-
+```
 
 Example:
 
-
-
+```text
 Your Cake Delight order #16 has been confirmed successfully.
+```
 
-11\. Stored Notification Example
-
-
+## 11. Stored Notification Example
 
 A successfully processed event results in a notification record similar to:
 
-
-
+```json
 {
-
-&#x20; "id": 14,
-
-&#x20; "userId": 101,
-
-&#x20; "orderId": 16,
-
-&#x20; "type": "ORDER\_CONFIRMATION",
-
-&#x20; "message": "Your Cake Delight order #16 has been confirmed successfully.",
-
-&#x20; "status": "SENT",
-
-&#x20; "createdAt": "2026-08-12T08:42:05.193891"
-
+  "id": 14,
+  "userId": 101,
+  "orderId": 16,
+  "type": "ORDER_CONFIRMATION",
+  "message": "Your Cake Delight order #16 has been confirmed successfully.",
+  "status": "SENT",
+  "createdAt": "2026-08-12T08:42:05.193891"
 }
-
-
-
-The exact identifier and timestamp depend on the runtime data.
-
-
-
-12\. Event-Driven Sequence
-
-┌───────────────┐
-
-│    Customer   │
-
-└───────┬───────┘
-
-&#x20;       │
-
-&#x20;       │ Checkout
-
-&#x20;       ▼
-
-┌───────────────────┐
-
-│   Order Service   │
-
-└─────────┬─────────┘
-
-&#x20;         │
-
-&#x20;         │ Create / complete order
-
-&#x20;         ▼
-
-┌───────────────────┐
-
-│      Order DB     │
-
-└───────────────────┘
-
-
-
-&#x20;         │
-
-&#x20;         │ ORDER\_COMPLETED
-
-&#x20;         ▼
-
-┌───────────────────┐
-
-│      RabbitMQ     │
-
-│ order.completed   │
-
-│      .queue       │
-
-└─────────┬─────────┘
-
-&#x20;         │
-
-&#x20;         │ Consume event
-
-&#x20;         ▼
-
-┌────────────────────────┐
-
-│ Notification Service   │
-
-│ OrderCompletedListener │
-
-└───────────┬────────────┘
-
-&#x20;           │
-
-&#x20;           │ Create confirmation
-
-&#x20;           ▼
-
-┌────────────────────────┐
-
-│   Notification DB      │
-
-└────────────────────────┘
-
-13\. Synchronous vs Asynchronous Communication
-
-
-
-Cake Delight uses two communication patterns.
-
-
-
-Synchronous
-
-
-
-Client-facing operations use HTTP/REST:
-
-
-
-Frontend
-
-&#x20;  ↓
-
-API Gateway
-
-&#x20;  ↓
-
-Backend Service
-
-
-
-Examples include:
-
-
-
-GET /api/cakes
-
-GET /api/baskets/{userId}
-
-GET /api/orders/{orderId}
-
-GET /api/ratings/cake/{cakeId}
-
-Asynchronous
-
-
+```
+
+## 12. Event-Driven Sequence
+
+```text
+Customer
+   ↓
+Order Service
+   ↓
+Order DB
+   ↓
+ORDER_COMPLETED
+   ↓
+RabbitMQ
+   ↓
+Notification Service
+   ↓
+Notification DB
+```
+
+## 13. Communication Patterns
+
+The project uses both synchronous and asynchronous communication:
+
+### Synchronous
+
+Client-facing operations use HTTP/REST through the API Gateway:
+
+- `GET /api/cakes`
+- `GET /api/baskets/{userId}`
+- `GET /api/orders/{orderId}`
+- `GET /api/ratings/cake/{cakeId}`
+
+### Asynchronous
 
 Order confirmation uses messaging:
 
+```text
+Order Service → RabbitMQ → Notification Service
+```
 
+This prevents the Order Service from requiring a synchronous Notification Service request during the event-driven flow.
 
-Order Service
+## 14. Ownership
 
-&#x20;  ↓
+- Event Producer: Order Service
+- Message Broker: RabbitMQ
+- Queue: `order.completed.queue`
+- Event Consumer: Notification Service
+- Persistence: `notification_db`
 
-RabbitMQ
+## 15. Verification
 
-&#x20;  ↓
-
-Notification Service
-
-
-
-This prevents the Order Service from requiring a synchronous Notification Service request to complete the event-driven workflow.
-
-
-
-14\. Event Ownership
-
-
-
-The event ownership is:
-
-
-
-Event Producer:
-
-Order Service
-
-
-
-Message Broker:
-
-RabbitMQ
-
-
-
-Queue:
-
-order.completed.queue
-
-
-
-Event Consumer:
-
-Notification Service
-
-
-
-Persistence:
-
-notification\_db
-
-15\. Verification
-
-
-
-The event-driven notification flow has been verified in the running Kubernetes environment.
-
-
-
-The Notification Service successfully connects to RabbitMQ and persists order-confirmation notifications.
-
-
-
-Verified notification records include completed orders such as:
-
-
-
-Order #13
-
-Order #14
-
-Order #15
-
-Order #16
-
-
-
-with:
-
-
-
-type   = ORDER\_CONFIRMATION
-
-status = SENT
-
-
-
-The Notification Service runtime logs also show database insert operations after event processing.
-
-
-
-16\. Assessment Requirement Mapping
-
-
-
-This implementation satisfies the event-driven portion of the capstone requirement:
-
-
-
-Order completion
-
-&#x20;     ↓
-
-Publish event
-
-&#x20;     ↓
-
-Message broker
-
-&#x20;     ↓
-
-Notification consumer
-
-&#x20;     ↓
-
-Order confirmation notification
-
-
-
-The design demonstrates asynchronous communication between independently deployable microservices using RabbitMQ.
-
-
-
-17\. Error Handling and Scope
-
-
-
-The current implementation focuses on the successful order-completion notification workflow.
-
-
-
-The capstone implementation does not claim external email or SMS delivery unless separately configured.
-
-
-
-The notification record is persisted with a SENT status as part of the implemented notification workflow.
-
-
-
-18\. Summary
-
-
-
-The event contract provides a clear asynchronous boundary between order processing and notification processing.
-
-
-
-The Order Service owns the order-completion event, RabbitMQ transports the event, and the Notification Service consumes the event and creates the corresponding order-confirmation notification.
-
-
-
-This demonstrates loose coupling and event-driven communication in the Cake Delight cloud-native architecture.
-
+The event-driven notification flow is implemented in the repository and is aligned with the actual code path in the Order Service and Notification Service.

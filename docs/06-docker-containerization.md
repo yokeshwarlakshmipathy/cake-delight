@@ -1,8 +1,8 @@
-\# Cake Delight - Docker Containerization
+# Cake Delight - Docker Containerization
 
 
 
-\## 1. Overview
+## 1. Overview
 
 
 
@@ -22,7 +22,7 @@ The containerized services are later deployed through Kubernetes.
 
 
 
-\## 2. Containerization Architecture
+## 2. Containerization Architecture
 
 
 
@@ -100,7 +100,7 @@ Container / Kubernetes workload
 
 
 
-3\. Java Runtime
+3. Java Runtime
 
 
 
@@ -124,7 +124,7 @@ The use of a JRE runtime image keeps the application container focused on runnin
 
 
 
-4\. Service Dockerfile Pattern
+4. Service Dockerfile Pattern
 
 
 
@@ -174,7 +174,7 @@ Expose service port
 
 Run java -jar app.jar
 
-5\. Maven Build
+5. Maven Build
 
 
 
@@ -204,7 +204,7 @@ The Spring Boot Maven Plugin then repackages the JAR as an executable Spring Boo
 
 
 
-6\. Order Service Image Build
+6. Order Service Image Build
 
 
 
@@ -234,7 +234,7 @@ The Kubernetes deployment was verified to use:
 
 cakedelight/order-service:1.2
 
-7\. Image Versioning
+7. Image Versioning
 
 
 
@@ -270,7 +270,7 @@ This demonstrates an independently deployable service update.
 
 
 
-8\. Container-to-Service Communication
+8. Container-to-Service Communication
 
 
 
@@ -302,7 +302,7 @@ This allows Pods to be recreated without requiring application configuration to 
 
 
 
-9\. Environment-Based Configuration
+9. Environment-Based Configuration
 
 
 
@@ -314,11 +314,11 @@ Database configuration uses:
 
 
 
-SPRING\_DATASOURCE\_URL
+SPRING_DATASOURCE_URL
 
-SPRING\_DATASOURCE\_USERNAME
+SPRING_DATASOURCE_USERNAME
 
-SPRING\_DATASOURCE\_PASSWORD
+SPRING_DATASOURCE_PASSWORD
 
 
 
@@ -326,13 +326,13 @@ RabbitMQ configuration uses:
 
 
 
-SPRING\_RABBITMQ\_HOST
+SPRING_RABBITMQ_HOST
 
-SPRING\_RABBITMQ\_PORT
+SPRING_RABBITMQ_PORT
 
-SPRING\_RABBITMQ\_USERNAME
+SPRING_RABBITMQ_USERNAME
 
-SPRING\_RABBITMQ\_PASSWORD
+SPRING_RABBITMQ_PASSWORD
 
 
 
@@ -340,7 +340,7 @@ This separates deployment configuration from application source code.
 
 
 
-10\. Kubernetes Secrets and Containers
+10. Kubernetes Secrets and Containers
 
 
 
@@ -354,7 +354,7 @@ The deployed service configuration uses references such as:
 
 env:
 
-&#x20; - name: SPRING\_DATASOURCE\_USERNAME
+&#x20; - name: SPRING_DATASOURCE_USERNAME
 
 &#x20;   valueFrom:
 
@@ -362,11 +362,11 @@ env:
 
 &#x20;       name: cake-db-secret
 
-&#x20;       key: POSTGRES\_USERNAME
+&#x20;       key: POSTGRES_USERNAME
 
 
 
-&#x20; - name: SPRING\_DATASOURCE\_PASSWORD
+&#x20; - name: SPRING_DATASOURCE_PASSWORD
 
 &#x20;   valueFrom:
 
@@ -374,7 +374,7 @@ env:
 
 &#x20;       name: cake-db-secret
 
-&#x20;       key: POSTGRES\_PASSWORD
+&#x20;       key: POSTGRES_PASSWORD
 
 
 
@@ -382,7 +382,7 @@ The container therefore receives the credentials at runtime instead of storing t
 
 
 
-11\. Container Ports
+11. Container Ports
 
 
 
@@ -412,7 +412,7 @@ The application port is also reflected by the corresponding Docker and Kubernete
 
 
 
-12\. Container Build Lifecycle
+12. Container Build Lifecycle
 
 
 
@@ -446,7 +446,7 @@ Kubernetes Deployment
 
 Running Container / Pod
 
-13\. Example Build Process
+13. Example Build Process
 
 
 
@@ -474,7 +474,7 @@ The image can then be referenced by the Kubernetes deployment:
 
 image: cakedelight/order-service:1.2
 
-14\. Kubernetes Image Deployment
+14. Kubernetes Image Deployment
 
 
 
@@ -514,7 +514,7 @@ the deployment is rolled out using:
 
 kubectl rollout status deployment/order-service -n cake-delight
 
-15\. Deployment Verification
+15. Deployment Verification
 
 
 
@@ -534,7 +534,7 @@ The verified deployment returned:
 
 cakedelight/order-service:1.2
 
-16\. Container Health
+16. Container Health
 
 
 
@@ -556,7 +556,7 @@ This allows Kubernetes to determine container health and readiness.
 
 
 
-17\. Advantages Demonstrated
+17. Advantages Demonstrated
 
 
 
@@ -578,7 +578,7 @@ Separation of build and runtime environments
 
 Integration with Kubernetes orchestration
 
-18\. Containerization Summary
+18. Containerization Summary
 
 
 

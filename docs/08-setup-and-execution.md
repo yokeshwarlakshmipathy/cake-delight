@@ -1,8 +1,8 @@
-\# Cake Delight - Setup and Execution Guide
+# Cake Delight - Setup and Execution Guide
 
 
 
-\## 1. Prerequisites
+## 1. Prerequisites
 
 
 
@@ -36,7 +36,7 @@ The backend services are Spring Boot applications.
 
 
 
-\# 2. Project Structure
+# 2. Project Structure
 
 
 
@@ -72,7 +72,7 @@ cake-delight/
 
 
 
-3\. Backend Services
+3. Backend Services
 
 
 
@@ -112,7 +112,7 @@ RabbitMQ	5672
 
 RabbitMQ Management	15672
 
-4\. Database Setup
+4. Database Setup
 
 
 
@@ -120,13 +120,13 @@ The application uses separate PostgreSQL databases:
 
 
 
-catalog\_db
+catalog_db
 
-order\_db
+order_db
 
-rating\_db
+rating_db
 
-notification\_db
+notification_db
 
 
 
@@ -146,9 +146,9 @@ The relevant secret keys are:
 
 
 
-POSTGRES\_USERNAME
+POSTGRES_USERNAME
 
-POSTGRES\_PASSWORD
+POSTGRES_PASSWORD
 
 
 
@@ -156,7 +156,7 @@ The application source configuration does not contain the previous hardcoded Pos
 
 
 
-5\. Building the Backend Services
+5. Building the Backend Services
 
 
 
@@ -188,7 +188,7 @@ cd services/notification-service
 
 .\\mvnw.cmd clean package -DskipTests
 
-6\. Running Tests
+6. Running Tests
 
 
 
@@ -242,7 +242,7 @@ Rating Service        → BUILD SUCCESS
 
 Notification Service  → BUILD SUCCESS
 
-7\. Docker Images
+7. Docker Images
 
 
 
@@ -272,7 +272,7 @@ EXPOSE <service-port>
 
 ENTRYPOINT \["java", "-jar", "app.jar"]
 
-8\. Building a Docker Image
+8. Building a Docker Image
 
 
 
@@ -298,7 +298,7 @@ The verified current Order Service image is:
 
 cakedelight/order-service:1.2
 
-9\. Kubernetes Namespace
+9. Kubernetes Namespace
 
 
 
@@ -316,7 +316,7 @@ Verify the namespace/resources with:
 
 kubectl get pods -n cake-delight
 
-10\. Kubernetes Manifest Files
+10. Kubernetes Manifest Files
 
 
 
@@ -340,7 +340,7 @@ k8s/
 
 └── rating-service.yaml
 
-11\. Kubernetes Deployment Order
+11. Kubernetes Deployment Order
 
 
 
@@ -398,7 +398,7 @@ Apply the API Gateway Service:
 
 kubectl apply -f .\\k8s\\api-gateway-service.yaml
 
-12\. Verify Kubernetes Deployments
+12. Verify Kubernetes Deployments
 
 
 
@@ -438,7 +438,7 @@ For newer Kubernetes versions, EndpointSlices can also be inspected.
 
 
 
-13\. Verify Pod Status
+13. Verify Pod Status
 
 
 
@@ -472,7 +472,7 @@ notification-service
 
 rabbitmq
 
-14\. Verify Order Service Rollout
+14. Verify Order Service Rollout
 
 
 
@@ -508,7 +508,7 @@ The verified image is:
 
 cakedelight/order-service:1.2
 
-15\. API Gateway Port Forwarding
+15. API Gateway Port Forwarding
 
 
 
@@ -540,7 +540,7 @@ Using 127.0.0.1 avoids the local IPv4/IPv6 localhost listener issue encountered 
 
 
 
-16\. Verify Catalog API
+16. Verify Catalog API
 
 
 
@@ -562,9 +562,9 @@ Example filters:
 
 Invoke-RestMethod "http://127.0.0.1:8091/api/cakes?category=Chocolate"
 
-Invoke-RestMethod "http://127.0.0.1:8091/api/cakes?minPrice=600\&maxPrice=800"
+Invoke-RestMethod "http://127.0.0.1:8091/api/cakes?minPrice=600&maxPrice=800"
 
-17\. Verify Basket API
+17. Verify Basket API
 
 
 
@@ -590,7 +590,7 @@ Invoke-RestMethod `
 
 &#x20; -Body '{"cakeId":1,"quantity":2}'
 
-18\. Verify Checkout
+18. Verify Checkout
 
 
 
@@ -618,7 +618,7 @@ The basket is cleared after successful checkout.
 
 
 
-19\. Verify Order History
+19. Verify Order History
 
 Invoke-RestMethod `
 
@@ -632,7 +632,7 @@ This returns the order history for user 101.
 
 
 
-20\. Verify Rating
+20. Verify Rating
 
 
 
@@ -676,7 +676,7 @@ A second rating attempt by the same user for the same cake is rejected according
 
 
 
-21\. Verify Notifications
+21. Verify Notifications
 
 
 
@@ -710,7 +710,7 @@ Successful order-confirmation notifications contain:
 
 type:
 
-ORDER\_CONFIRMATION
+ORDER_CONFIRMATION
 
 
 
@@ -718,7 +718,7 @@ status:
 
 SENT
 
-22\. Verify RabbitMQ Event Flow
+22. Verify RabbitMQ Event Flow
 
 
 
@@ -734,7 +734,7 @@ Order Service
 
 &#x20;  ↓
 
-ORDER\_COMPLETED
+ORDER_COMPLETED
 
 &#x20;  ↓
 
@@ -766,7 +766,7 @@ The service logs demonstrate RabbitMQ connectivity and notification persistence.
 
 
 
-23\. Verify Internal Kubernetes Communication
+23. Verify Internal Kubernetes Communication
 
 
 
@@ -820,7 +820,7 @@ A successful response returns:
 
 HTTP/1.1 200
 
-24\. Frontend Setup
+24. Frontend Setup
 
 
 
@@ -862,7 +862,7 @@ The frontend uses the API Gateway as its backend API path.
 
 
 
-25\. Frontend Customer Flow
+25. Frontend Customer Flow
 
 
 
@@ -916,7 +916,7 @@ View Order
 
 Rate / Review Cake
 
-26\. Troubleshooting
+26. Troubleshooting
 
 Pod Not Running
 
@@ -1030,7 +1030,7 @@ Check the RabbitMQ Service:
 
 kubectl get service rabbitmq -n cake-delight
 
-27\. Clean Build and Rebuild
+27. Clean Build and Rebuild
 
 
 
@@ -1084,7 +1084,7 @@ kubectl apply -f .\\k8s\\order-service.yaml
 
 kubectl rollout status deployment/order-service -n cake-delight
 
-28\. Final Startup Checklist
+28. Final Startup Checklist
 
 
 
@@ -1126,7 +1126,7 @@ Then:
 
 kubectl get services -n cake-delight
 
-29\. Final Verification
+29. Final Verification
 
 
 

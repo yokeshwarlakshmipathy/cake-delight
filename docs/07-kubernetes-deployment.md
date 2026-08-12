@@ -1,8 +1,8 @@
-\# Cake Delight - Kubernetes Deployment
+# Cake Delight - Kubernetes Deployment
 
 
 
-\## 1. Overview
+## 1. Overview
 
 
 
@@ -24,7 +24,7 @@ The deployment includes the API Gateway, Catalog Service, Order Service, Rating 
 
 
 
-2\. Kubernetes Namespace
+2. Kubernetes Namespace
 
 
 
@@ -40,7 +40,7 @@ The namespace provides logical isolation for the Cake Delight application resour
 
 
 
-3\. Kubernetes Components
+3. Kubernetes Components
 
 
 
@@ -64,7 +64,7 @@ cake-delight
 
 └── rabbitmq
 
-4\. Kubernetes Services
+4. Kubernetes Services
 
 
 
@@ -110,7 +110,7 @@ The services use Kubernetes DNS/service names rather than Pod IP addresses.
 
 
 
-5\. API Gateway Deployment
+5. API Gateway Deployment
 
 
 
@@ -130,17 +130,17 @@ The Gateway routes requests to:
 
 
 
-/api/cakes/\*\*           → catalog-service:8081
+/api/cakes/**           → catalog-service:8081
 
-/api/baskets/\*\*         → order-service:8082
+/api/baskets/**         → order-service:8082
 
-/api/orders/\*\*          → order-service:8082
+/api/orders/**          → order-service:8082
 
-/api/ratings/\*\*         → rating-service:8083
+/api/ratings/**         → rating-service:8083
 
-/api/notifications/\*\*  → notification-service:8084
+/api/notifications/**  → notification-service:8084
 
-6\. Catalog Service Deployment
+6. Catalog Service Deployment
 
 
 
@@ -164,7 +164,7 @@ The service is responsible for cake product data and filtering.
 
 
 
-7\. Order Service Deployment
+7. Order Service Deployment
 
 
 
@@ -200,7 +200,7 @@ The deployment was successfully rolled out using Kubernetes.
 
 
 
-8\. Rating Service Deployment
+8. Rating Service Deployment
 
 
 
@@ -224,7 +224,7 @@ The service manages ratings, comments, average ratings, and duplicate-rating pre
 
 
 
-9\. Notification Service Deployment
+9. Notification Service Deployment
 
 
 
@@ -248,7 +248,7 @@ The service consumes RabbitMQ order-completion events and persists order confirm
 
 
 
-10\. RabbitMQ Deployment
+10. RabbitMQ Deployment
 
 
 
@@ -294,7 +294,7 @@ order.completed.queue
 
 Notification Service
 
-11\. Kubernetes Secrets
+11. Kubernetes Secrets
 
 
 
@@ -314,9 +314,9 @@ The relevant keys are:
 
 
 
-POSTGRES\_USERNAME
+POSTGRES_USERNAME
 
-POSTGRES\_PASSWORD
+POSTGRES_PASSWORD
 
 
 
@@ -326,7 +326,7 @@ Example:
 
 env:
 
-&#x20; - name: SPRING\_DATASOURCE\_USERNAME
+&#x20; - name: SPRING_DATASOURCE_USERNAME
 
 &#x20;   valueFrom:
 
@@ -334,11 +334,11 @@ env:
 
 &#x20;       name: cake-db-secret
 
-&#x20;       key: POSTGRES\_USERNAME
+&#x20;       key: POSTGRES_USERNAME
 
 
 
-&#x20; - name: SPRING\_DATASOURCE\_PASSWORD
+&#x20; - name: SPRING_DATASOURCE_PASSWORD
 
 &#x20;   valueFrom:
 
@@ -346,7 +346,7 @@ env:
 
 &#x20;       name: cake-db-secret
 
-&#x20;       key: POSTGRES\_PASSWORD
+&#x20;       key: POSTGRES_PASSWORD
 
 
 
@@ -354,7 +354,7 @@ This keeps deployment credentials separate from the service source code.
 
 
 
-12\. Health Probes
+12. Health Probes
 
 
 
@@ -404,7 +404,7 @@ readinessProbe:
 
 &#x20;   port: 8082
 
-13\. Service Discovery
+13. Service Discovery
 
 
 
@@ -438,7 +438,7 @@ This provides service discovery within the Kubernetes cluster.
 
 
 
-14\. Deployment Commands
+14. Deployment Commands
 
 View all Pods
 
@@ -462,7 +462,7 @@ Kubernetes versions where the legacy Endpoints API is deprecated can use Endpoin
 
 
 
-15\. Rollout Verification
+15. Rollout Verification
 
 
 
@@ -488,7 +488,7 @@ A successful rollout is reported as:
 
 deployment "order-service" successfully rolled out
 
-16\. Verifying a Running Image
+16. Verifying a Running Image
 
 
 
@@ -508,7 +508,7 @@ The verified Order Service deployment uses:
 
 cakedelight/order-service:1.2
 
-17\. Viewing Service Logs
+17. Viewing Service Logs
 
 
 
@@ -534,7 +534,7 @@ The Notification Service logs demonstrate its RabbitMQ connection and notificati
 
 
 
-18\. API Gateway Port Forwarding
+18. API Gateway Port Forwarding
 
 
 
@@ -568,7 +568,7 @@ Example order-history test:
 
 Invoke-RestMethod "http://127.0.0.1:8091/api/orders/user/101"
 
-19\. Verified Kubernetes Runtime
+19. Verified Kubernetes Runtime
 
 
 
@@ -622,7 +622,7 @@ This verifies Kubernetes service discovery and internal request routing.
 
 
 
-20\. End-to-End Kubernetes Communication
+20. End-to-End Kubernetes Communication
 
 
 
@@ -672,7 +672,7 @@ Notification Service
 
 Notification Database
 
-21\. Kubernetes Resource Ownership
+21. Kubernetes Resource Ownership
 
 
 
@@ -696,7 +696,7 @@ Container restart management
 
 Horizontal scaling capability through Kubernetes deployments
 
-22\. Deployment Summary
+22. Deployment Summary
 
 
 

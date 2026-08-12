@@ -1,504 +1,320 @@
-\# Cake Delight - API Documentation
+# Cake Delight - API Documentation
 
-
-
-\## 1. Overview
-
-
+## 1. Overview
 
 The Cake Delight backend exposes REST APIs through the API Gateway.
 
-
-
-Base URL for local Kubernetes testing:
-
-
+Base URL for local gateway access:
 
 ```text
-
 http://127.0.0.1:8091
+```
 
+The API Gateway routes requests to the matching microservice.
 
+| Service | Gateway Route | Internal Port |
+| --- | --- | ---: |
+| Catalog | `/api/cakes/**` | 8081 |
+| Order / Basket | `/api/baskets/**` | 8082 |
+| Order | `/api/orders/**` | 8082 |
+| Rating | `/api/ratings/**` | 8083 |
+| Notification | `/api/notifications/**` | 8084 |
 
-The API Gateway routes requests to the corresponding microservice.
+## 2. Catalog Service APIs
 
+### 2.1 Create Cake
 
+`POST /api/cakes`
 
-| Service        | Gateway Route           | Internal Port |
+Request body:
 
-| -------------- | ----------------------- | ------------: |
-
-| Catalog        | `/api/cakes/\*\*`         |          8081 |
-
-| Order / Basket | `/api/baskets/\*\*`       |          8082 |
-
-| Order          | `/api/orders/\*\*`        |          8082 |
-
-| Rating         | `/api/ratings/\*\*`       |          8083 |
-
-| Notification   | `/api/notifications/\*\*` |          8084 |
-
-
-
-
-
-2\. Catalog Service APIs
-
-2.1 Create Cake
-
-POST /api/cakes
-
-Request
-
+```json
 {
-
-&#x20; "name": "Chocolate Truffle Cake",
-
-&#x20; "description": "Rich chocolate cake with truffle frosting",
-
-&#x20; "category": "Chocolate",
-
-&#x20; "price": 899.00,
-
-&#x20; "available": true,
-
-&#x20; "imageUrl": "https://example.com/chocolate-truffle.jpg"
-
+  "name": "Chocolate Truffle Cake",
+  "description": "Rich chocolate cake with truffle frosting",
+  "category": "Chocolate",
+  "price": 899.00,
+  "available": true,
+  "imageUrl": "https://example.com/chocolate-truffle.jpg"
 }
+```
 
-Response
+Response:
 
+```http
 201 Created
+```
 
+Returns the created cake record.
 
+### 2.2 Get Cakes
 
-Returns the created cake.
+`GET /api/cakes`
 
+Returns all catalog records handled by the Catalog Service.
 
+Optional query filters:
 
-2.2 Get Cakes
-
-GET /api/cakes
-
-
-
-Returns all available catalog records handled by the Catalog Service.
-
-
-
-Optional Filters
-
-name
-
-category
-
-minPrice
-
-maxPrice
-
-
+- `name`
+- `category`
+- `minPrice`
+- `maxPrice`
 
 Example:
 
+```http
+GET /api/cakes?name=chocolate&category=Chocolate&minPrice=600&maxPrice=1000
+```
 
+Filters can be used independently or together. The service combines supplied filters as a single JPA specification query.
 
-GET /api/cakes?name=chocolate\&category=Chocolate\&minPrice=600\&maxPrice=1000
+### 2.3 Get Cake by ID
 
-
-
-The filters can also be used independently.
-
-
-
-Examples:
-
-
-
-GET /api/cakes?name=chocolate
-
-GET /api/cakes?category=Chocolate
-
-GET /api/cakes?minPrice=600\&maxPrice=800
-
-
-
-The Catalog Service combines supplied filters when more than one is provided.
-
-
-
-2.3 Get Cake by ID
-
-GET /api/cakes/{id}
-
-
+`GET /api/cakes/{id}`
 
 Example:
 
-
-
+```http
 GET /api/cakes/1
-
-
+```
 
 Returns the selected cake.
 
+### 2.4 Update Cake
 
-
-2.4 Update Cake
-
-PUT /api/cakes/{id}
-
-
+`PUT /api/cakes/{id}`
 
 Updates an existing cake.
 
+### 2.5 Delete Cake
 
-
-2.5 Delete Cake
-
-DELETE /api/cakes/{id}
-
-
+`DELETE /api/cakes/{id}`
 
 Deletes a catalog record.
 
+Response:
 
-
-Response
-
+```http
 204 No Content
+```
 
-3\. Basket APIs
-
-
+## 3. Basket APIs
 
 The basket APIs are provided by the Order Service.
 
+### 3.1 Get Basket
 
-
-3.1 Get Basket
-
-GET /api/baskets/{userId}
-
-
+`GET /api/baskets/{userId}`
 
 Example:
 
-
-
+```http
 GET /api/baskets/101
-
-
+```
 
 Example response:
 
-
-
+```json
 {
-
-&#x20; "id": 1,
-
-&#x20; "userId": 101,
-
-&#x20; "items": \[
-
-&#x20;   {
-
-&#x20;     "id": 15,
-
-&#x20;     "cakeId": 1,
-
-&#x20;     "quantity": 2,
-
-&#x20;     "unitPrice": 899.00,
-
-&#x20;     "subtotal": 1798.00
-
-&#x20;   }
-
-&#x20; ],
-
-&#x20; "totalAmount": 1798.00
-
+  "id": 1,
+  "userId": 101,
+  "items": [
+    {
+      "id": 15,
+      "cakeId": 1,
+      "quantity": 2,
+      "unitPrice": 899.00,
+      "subtotal": 1798.00
+    }
+  ],
+  "totalAmount": 1798.00
 }
+```
 
-3.2 Add Cake to Basket
+### 3.2 Add Cake to Basket
 
-POST /api/baskets/{userId}/items
-
-
+`POST /api/baskets/{userId}/items`
 
 Example:
 
-
-
+```http
 POST /api/baskets/101/items
+```
 
-Request
+Request body:
 
+```json
 {
-
-&#x20; "cakeId": 1,
-
-&#x20; "quantity": 2
-
+  "cakeId": 1,
+  "quantity": 2
 }
-
-
+```
 
 The service calculates the item subtotal and basket total.
 
+### 3.3 Update Basket Item
 
+`PUT /api/baskets/{userId}/items/{itemId}`
 
-3.3 Update Basket Item
+Request body:
 
-PUT /api/baskets/{userId}/items/{itemId}
-
-Request
-
+```json
 {
-
-&#x20; "quantity": 3
-
+  "quantity": 3
 }
-
-
+```
 
 The basket totals are recalculated after the quantity change.
 
+### 3.4 Remove Basket Item
 
-
-3.4 Remove Basket Item
-
-DELETE /api/baskets/{userId}/items/{itemId}
-
-
+`DELETE /api/baskets/{userId}/items/{itemId}`
 
 Removes the selected basket item and recalculates the basket total.
 
+## 4. Order APIs
 
+### 4.1 Checkout
 
-4\. Order APIs
+`POST /api/orders/checkout`
 
-4.1 Checkout
+Request body:
 
-POST /api/orders/checkout
-
-Request
-
+```json
 {
-
-&#x20; "userId": 101
-
+  "userId": 101
 }
+```
 
-Successful Response
+Successful response:
 
+```http
 201 Created
+```
 
+Example response:
 
-
-Example:
-
-
-
+```json
 {
-
-&#x20; "id": 16,
-
-&#x20; "userId": 101,
-
-&#x20; "totalAmount": 3396.00,
-
-&#x20; "status": "COMPLETED",
-
-&#x20; "createdAt": "2026-08-12T08:42:05.193891",
-
-&#x20; "items": \[
-
-&#x20;   {
-
-&#x20;     "id": 16,
-
-&#x20;     "cakeId": 3,
-
-&#x20;     "quantity": 1,
-
-&#x20;     "unitPrice": 699.00,
-
-&#x20;     "subtotal": 699.00
-
-&#x20;   },
-
-&#x20;   {
-
-&#x20;     "id": 17,
-
-&#x20;     "cakeId": 1,
-
-&#x20;     "quantity": 3,
-
-&#x20;     "unitPrice": 899.00,
-
-&#x20;     "subtotal": 2697.00
-
-&#x20;   }
-
-&#x20; ]
-
+  "id": 16,
+  "userId": 101,
+  "totalAmount": 3396.00,
+  "status": "COMPLETED",
+  "createdAt": "2026-08-12T08:42:05.193891",
+  "items": [
+    {
+      "id": 16,
+      "cakeId": 3,
+      "quantity": 1,
+      "unitPrice": 699.00,
+      "subtotal": 699.00
+    },
+    {
+      "id": 17,
+      "cakeId": 1,
+      "quantity": 3,
+      "unitPrice": 899.00,
+      "subtotal": 2697.00
+    }
+  ]
 }
-
-
+```
 
 During checkout the Order Service:
 
+- reads the user's basket
+- validates that the basket is not empty
+- creates the order and order items
+- persists the order
+- marks the order as completed
+- publishes the order-completion event
+- clears the basket after processing
 
+### 4.2 Get Order by ID
 
-Reads the user's basket.
-
-Validates that the basket is not empty.
-
-Creates the order.
-
-Creates the order items.
-
-Persists the order.
-
-Marks the order as completed.
-
-Publishes the order-completion event.
-
-Clears the basket after successful processing.
-
-4.2 Get Order by ID
-
-GET /api/orders/{orderId}
-
-
+`GET /api/orders/{orderId}`
 
 Example:
 
-
-
+```http
 GET /api/orders/16
-
-
+```
 
 Returns the complete order and order items.
 
+### 4.3 Get Orders by User
 
-
-4.3 Get Orders by User
-
-GET /api/orders/user/{userId}
-
-
+`GET /api/orders/user/{userId}`
 
 Example:
 
-
-
+```http
 GET /api/orders/user/101
-
-
+```
 
 Returns the user's order history ordered by creation time, newest first.
 
+## 5. Rating APIs
 
+### 5.1 Create Rating
 
-5\. Rating APIs
+`POST /api/ratings`
 
-5.1 Create Rating
+Request body:
 
-POST /api/ratings
-
-Request
-
+```json
 {
-
-&#x20; "userId": 101,
-
-&#x20; "cakeId": 1,
-
-&#x20; "rating": 5,
-
-&#x20; "comment": "Fresh and delicious!"
-
+  "userId": 101,
+  "cakeId": 1,
+  "rating": 5,
+  "comment": "Fresh and delicious!"
 }
+```
 
-Successful Response
+Successful response:
 
+```http
 201 Created
+```
 
-Validation
+Validation rules:
 
+- `1 <= rating <= 5`
+- comment length is limited to 1000 characters
 
-
-The rating must satisfy:
-
-
-
-1 <= rating <= 5
-
-
-
-The review comment can contain a maximum of 1000 characters.
-
-
-
-5.2 Duplicate Rating
-
-
+### 5.2 Duplicate Rating
 
 A user can only submit one rating for the same cake.
 
+If the same user attempts to rate the same cake again, the service rejects the request and returns a conflict-style error.
 
+### 5.3 Get Cake Ratings
 
-If the same user attempts to rate the same cake again, the service rejects the duplicate rating and the frontend displays:
-
-
-
-User has already rated this cake.
-
-5.3 Get Cake Ratings
-
-GET /api/ratings/cake/{cakeId}
-
-
+`GET /api/ratings/cake/{cakeId}`
 
 Example:
 
-
-
+```http
 GET /api/ratings/cake/1
-
-
+```
 
 Returns ratings and review comments for the selected cake.
 
+### 5.4 Get Average Cake Rating
 
-
-5.4 Get Average Cake Rating
-
-GET /api/ratings/cake/{cakeId}/average
-
-
+`GET /api/ratings/cake/{cakeId}/average`
 
 Example:
 
-
-
+```http
 GET /api/ratings/cake/1/average
-
-
+```
 
 Returns the average rating and rating count.
 
+## 6. Notification APIs
 
-
-6\. Notification APIs
-
-## 6.1 Create Order Confirmation
+### 6.1 Create Order Confirmation
 
 ```http
 POST /api/notifications/order-confirmation?userId={userId}&orderId={orderId}
@@ -510,14 +326,14 @@ Example:
 POST /api/notifications/order-confirmation?userId=101&orderId=16
 ```
 
-### Query Parameters
+#### Query parameters
 
 | Parameter | Type | Required | Description |
-| --------- | ---- | -------- | ----------- |
+| --- | --- | --- | --- |
 | `userId` | Long | Yes | User receiving the notification |
 | `orderId` | Long | Yes | Order associated with the notification |
 
-### Successful Response
+Successful response:
 
 ```http
 201 Created
@@ -537,258 +353,122 @@ The response contains the created notification:
 }
 ```
 
+Important: this implementation persists an in-app notification record in the Notification Service database and marks it as `SENT`. It does not implement external email or SMS delivery in this codebase.
+
 The Notification Service also creates order-confirmation notifications automatically when it receives the order-completion event from RabbitMQ.
 
-Your other notification endpoints are exactly:
+Other notification endpoints:
 
 ```http
 GET /api/notifications/user/{userId}
 GET /api/notifications/order/{orderId}
 ```
 
-So that section is now fully aligned with the controller you've actually implemented.
+### 6.2 Get Notifications by User
 
-### One important distinction for the documentation
-
-There are two ways an order-confirmation notification can be created:
-
-```text
-Manual REST API:
-POST /api/notifications/order-confirmation?userId=101&orderId=16
-
-Event-driven flow:
-Order Service
-    ↓
-ORDER_COMPLETED
-    ↓
-RabbitMQ
-    ↓
-Notification Service
-    ↓
-createOrderConfirmation()
-```
-
-For the capstone, the event-driven path is the important one, because that directly satisfies the requirement to send order confirmation after successful checkout.
-
-Your verified notification records show this is functioning for completed orders.
-
-## 6.2 Get Notifications by User
-
-GET /api/notifications/user/{userId}
-
-
+`GET /api/notifications/user/{userId}`
 
 Example:
 
-
-
+```http
 GET /api/notifications/user/101
-
-
+```
 
 Example response:
 
-
-
-\[
-
-&#x20; {
-
-&#x20;   "id": 14,
-
-&#x20;   "userId": 101,
-
-&#x20;   "orderId": 16,
-
-&#x20;   "type": "ORDER\_CONFIRMATION",
-
-&#x20;   "message": "Your Cake Delight order #16 has been confirmed successfully.",
-
-&#x20;   "status": "SENT",
-
-&#x20;   "createdAt": "2026-08-12T08:42:05.193891"
-
-&#x20; }
-
+```json
+[
+  {
+    "id": 14,
+    "userId": 101,
+    "orderId": 16,
+    "type": "ORDER_CONFIRMATION",
+    "message": "Your Cake Delight order #16 has been confirmed successfully.",
+    "status": "SENT",
+    "createdAt": "2026-08-12T08:42:05.193891"
+  }
 ]
+```
 
-6.3 Get Notifications by Order
+### 6.3 Get Notifications by Order
 
-GET /api/notifications/order/{orderId}
-
-
+`GET /api/notifications/order/{orderId}`
 
 Example:
 
-
-
+```http
 GET /api/notifications/order/16
-
-
+```
 
 Returns notifications associated with the selected order.
 
-
-
-7\. Health APIs
-
-
+## 7. Health APIs
 
 The backend services expose Spring Boot Actuator endpoints for operational health information.
 
-
-
 The exposed management endpoints include:
 
+- `/actuator/health`
+- `/actuator/info`
 
+These endpoints are used by Kubernetes health and readiness checks where applicable.
 
-/actuator/health
-
-/actuator/info
-
-
-
-These endpoints are used by Kubernetes health/readiness configuration where applicable.
-
-
-
-8\. API Gateway
-
-
+## 8. API Gateway Routing
 
 The client should use the API Gateway as the primary HTTP entry point.
 
-
-
+```text
 Client
-
-&#x20;  ↓
-
+  ↓
 API Gateway :8091
-
-
-
-The gateway routes requests as follows:
-
-
-
-/api/cakes/\*\*          → catalog-service:8081
-
-/api/baskets/\*\*        → order-service:8082
-
-/api/orders/\*\*         → order-service:8082
-
-/api/ratings/\*\*        → rating-service:8083
-
-/api/notifications/\*\* → notification-service:8084
-
-
-
-Clients should therefore not depend on internal Pod IP addresses.
-
-
-
-9\. Representative End-to-End API Flow
-
-Step 1 - Browse Cakes
-
-GET /api/cakes
-
-Step 2 - Filter Cakes
-
-GET /api/cakes?category=Chocolate\&minPrice=600\&maxPrice=1000
-
-Step 3 - Add Cake
-
-POST /api/baskets/101/items
-
-Step 4 - View Basket
-
-GET /api/baskets/101
-
-Step 5 - Checkout
-
-POST /api/orders/checkout
-
-Step 6 - Retrieve Order
-
-GET /api/orders/{orderId}
-
-Step 7 - View Order History
-
-GET /api/orders/user/101
-
-Step 8 - Submit Rating
-
-POST /api/ratings
-
-Step 9 - View Ratings
-
-GET /api/ratings/cake/{cakeId}
-
-Step 10 - View Notifications
-
-GET /api/notifications/user/101
-
-10\. Error and Validation Behavior
-
-
-
-The application validates request data at service boundaries.
-
-
-
-Examples include:
-
-
-
-Required cake name
-
-Required category
-
-Positive cake price
-
-Rating between 1 and 5
-
-Maximum review comment length
-
-Non-empty basket required for checkout
-
-Duplicate rating prevention
-
-Missing resource handling
-
-
-
-The frontend displays user-friendly messages for important business errors such as duplicate ratings and checkout failures.
-
-
-
-11\. API Testing
-
-
-
-The APIs were validated through the running API Gateway and Kubernetes deployment.
-
-
+  ↓
+Catalog / Order / Rating / Notification services
+```
+
+Gateway routes:
+
+- `/api/cakes/**` → `catalog-service:8081`
+- `/api/baskets/**` → `order-service:8082`
+- `/api/orders/**` → `order-service:8082`
+- `/api/ratings/**` → `rating-service:8083`
+- `/api/notifications/**` → `notification-service:8084`
+
+Clients should therefore not depend on internal pod IP addresses.
+
+## 9. Representative End-to-End Flow
+
+1. `GET /api/cakes`
+2. `GET /api/cakes?category=Chocolate&minPrice=600&maxPrice=1000`
+3. `POST /api/baskets/101/items`
+4. `GET /api/baskets/101`
+5. `POST /api/orders/checkout`
+6. `GET /api/orders/{orderId}`
+7. `GET /api/orders/user/101`
+8. `POST /api/ratings`
+9. `GET /api/ratings/cake/{cakeId}`
+10. `GET /api/notifications/user/101`
+
+## 10. Validation and Error Behavior
+
+The application validates request data at service boundaries. Examples include:
+
+- required cake name and category
+- positive cake price
+- rating between 1 and 5
+- maximum review length
+- non-empty basket for checkout
+- duplicate rating prevention
+- missing-resource handling
+
+## 11. API Testing Notes
 
 Representative verified operations include:
 
-
-
-GET /api/cakes
-
-GET /api/orders/user/101
-
-GET /api/orders/{orderId}
-
-GET /api/notifications/user/101
-
-POST /api/orders/checkout
-
-POST /api/ratings
-
-
+- `GET /api/cakes`
+- `GET /api/orders/user/101`
+- `GET /api/orders/{orderId}`
+- `GET /api/notifications/user/101`
+- `POST /api/orders/checkout`
+- `POST /api/ratings`
 
 The API layer supports the complete customer workflow from catalog browsing through checkout, order history, ratings, and notification retrieval.
-

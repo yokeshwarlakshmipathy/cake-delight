@@ -1,8 +1,8 @@
-\# Cake Delight - Database Design
+# Cake Delight - Database Design
 
 
 
-\## 1. Overview
+## 1. Overview
 
 
 
@@ -18,13 +18,13 @@ Each core microservice maintains its own database:
 
 |---|---|
 
-| Catalog Service | `catalog\_db` |
+| Catalog Service | `catalog_db` |
 
-| Order Service | `order\_db` |
+| Order Service | `order_db` |
 
-| Rating Service | `rating\_db` |
+| Rating Service | `rating_db` |
 
-| Notification Service | `notification\_db` |
+| Notification Service | `notification_db` |
 
 
 
@@ -40,7 +40,7 @@ This supports separation of business responsibilities and independent service ow
 
 
 
-\# 2. Catalog Database
+# 2. Catalog Database
 
 
 
@@ -50,7 +50,7 @@ Database:
 
 ```text
 
-catalog\_db
+catalog_db
 
 
 
@@ -88,7 +88,7 @@ price	Current cake price
 
 available	Availability status
 
-image\_url / image reference	Product image reference
+image_url / image reference	Product image reference
 
 
 
@@ -136,7 +136,7 @@ The filters are combined at the service/repository level before retrieving the r
 
 
 
-3\. Order Database
+3. Order Database
 
 
 
@@ -144,7 +144,7 @@ Database:
 
 
 
-order\_db
+order_db
 
 
 
@@ -224,7 +224,7 @@ Table:
 
 
 
-basket\_items
+basket_items
 
 
 
@@ -256,7 +256,7 @@ The Order Service calculates basket subtotals and the overall basket total.
 
 
 
-4\. Order Entity
+4. Order Entity
 
 
 
@@ -326,7 +326,7 @@ During the current checkout flow the order is ultimately marked as:
 
 COMPLETED
 
-5\. Order Item
+5. Order Item
 
 
 
@@ -334,7 +334,7 @@ Table:
 
 
 
-order\_items
+order_items
 
 
 
@@ -380,7 +380,7 @@ Order
 
 &#x20; └── OrderItem
 
-6\. Order Database Relationships
+6. Order Database Relationships
 
 
 
@@ -440,7 +440,7 @@ After successful checkout, the basket is cleared.
 
 
 
-7\. Rating Database
+7. Rating Database
 
 
 
@@ -448,7 +448,7 @@ Database:
 
 
 
-rating\_db
+rating_db
 
 
 
@@ -508,7 +508,7 @@ The Rating Service maintains the rating data independently from the Catalog Serv
 
 
 
-8\. Rating Constraints
+8. Rating Constraints
 
 
 
@@ -542,7 +542,7 @@ This allows the service to reject duplicate submissions.
 
 
 
-9\. Average Rating
+9. Average Rating
 
 
 
@@ -584,7 +584,7 @@ The actual returned value depends on the ratings stored for the cake.
 
 
 
-10\. Notification Database
+10. Notification Database
 
 
 
@@ -592,7 +592,7 @@ Database:
 
 
 
-notification\_db
+notification_db
 
 
 
@@ -638,7 +638,7 @@ The current notification type is:
 
 
 
-ORDER\_CONFIRMATION
+ORDER_CONFIRMATION
 
 
 
@@ -648,7 +648,7 @@ The successful notification status is:
 
 SENT
 
-11\. Notification Relationship
+11. Notification Relationship
 
 
 
@@ -680,7 +680,7 @@ Order Service
 
 &#x20;     │
 
-&#x20;     │ ORDER\_COMPLETED event
+&#x20;     │ ORDER_COMPLETED event
 
 &#x20;     ▼
 
@@ -692,7 +692,7 @@ Notification Service
 
 notifications
 
-12\. Cross-Service References
+12. Cross-Service References
 
 
 
@@ -746,7 +746,7 @@ These are logical references communicated through APIs and events rather than cr
 
 
 
-13\. Persistence Ownership
+13. Persistence Ownership
 
 
 
@@ -758,7 +758,7 @@ Catalog Service
 
 &#x20;  ↓
 
-catalog\_db
+catalog_db
 
 &#x20;  └── cakes
 
@@ -770,15 +770,15 @@ Order Service
 
 &#x20;  ↓
 
-order\_db
+order_db
 
 &#x20;  ├── baskets
 
-&#x20;  ├── basket\_items
+&#x20;  ├── basket_items
 
 &#x20;  ├── orders
 
-&#x20;  └── order\_items
+&#x20;  └── order_items
 
 
 
@@ -788,7 +788,7 @@ Rating Service
 
 &#x20;  ↓
 
-rating\_db
+rating_db
 
 &#x20;  └── ratings
 
@@ -800,7 +800,7 @@ Notification Service
 
 &#x20;  ↓
 
-notification\_db
+notification_db
 
 &#x20;  └── notifications
 
@@ -810,7 +810,7 @@ This structure allows each service to evolve its business data independently.
 
 
 
-14\. Database Configuration
+14. Database Configuration
 
 
 
@@ -818,11 +818,11 @@ The application source configuration uses environment variables for PostgreSQL c
 
 
 
-SPRING\_DATASOURCE\_URL
+SPRING_DATASOURCE_URL
 
-SPRING\_DATASOURCE\_USERNAME
+SPRING_DATASOURCE_USERNAME
 
-SPRING\_DATASOURCE\_PASSWORD
+SPRING_DATASOURCE_PASSWORD
 
 
 
@@ -846,7 +846,7 @@ This allows the application to update the database schema from the JPA model dur
 
 
 
-15\. Test Database Configuration
+15. Test Database Configuration
 
 
 
@@ -880,7 +880,7 @@ so the test schema is created for the test execution and discarded afterward.
 
 
 
-16\. Database Security Practice
+16. Database Security Practice
 
 
 
@@ -904,7 +904,7 @@ This keeps deployment credentials separate from application source code.
 
 
 
-17\. Database Design Summary
+17. Database Design Summary
 
 
 
@@ -916,7 +916,7 @@ The database architecture follows the microservice ownership model:
 
 &#x20;            │ Catalog Service  │
 
-&#x20;            │   catalog\_db     │
+&#x20;            │   catalog_db     │
 
 &#x20;            └────────┬────────┘
 
@@ -930,7 +930,7 @@ The database architecture follows the microservice ownership model:
 
 &#x20;            │  Order Service   │
 
-&#x20;            │    order\_db      │
+&#x20;            │    order_db      │
 
 &#x20;            └────────┬────────┘
 
@@ -944,7 +944,7 @@ The database architecture follows the microservice ownership model:
 
 &#x20;         │                       │
 
-&#x20;    basket\_items             order\_items
+&#x20;    basket_items             order_items
 
 
 
@@ -952,7 +952,7 @@ The database architecture follows the microservice ownership model:
 
 &#x20;            │ Rating Service   │
 
-&#x20;            │    rating\_db     │
+&#x20;            │    rating_db     │
 
 &#x20;            └────────┬────────┘
 
@@ -968,7 +968,7 @@ The database architecture follows the microservice ownership model:
 
 &#x20;            │ Service            │
 
-&#x20;            │ notification\_db    │
+&#x20;            │ notification_db    │
 
 &#x20;            └─────────┬──────────┘
 
