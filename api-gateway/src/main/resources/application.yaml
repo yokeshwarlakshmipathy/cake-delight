@@ -1,0 +1,53 @@
+spring:
+  application:
+    name: api-gateway
+
+  cloud:
+    gateway:
+      server:
+        webmvc:
+          routes:
+
+            # Catalog Service
+            - id: catalog-service
+              uri: http://catalog-service:8081
+              predicates:
+                - Path=/api/cakes/**
+
+            # Order Service - Baskets
+            - id: order-basket-service
+              uri: http://order-service:8082
+              predicates:
+                - Path=/api/baskets/**
+
+            # Order Service - Orders
+            - id: order-service
+              uri: http://order-service:8082
+              predicates:
+                - Path=/api/orders/**
+
+            # Rating Service
+            - id: rating-service
+              uri: http://rating-service:8083
+              predicates:
+                - Path=/api/ratings/**
+
+            # Notification Service
+            - id: notification-service
+              uri: http://notification-service:8084
+              predicates:
+                - Path=/api/notifications/**
+
+server:
+  port: 8091
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+  endpoint:
+    health:
+      probes:
+        enabled: true
